@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBSJ Computing Vision</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React and ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Destructure hooks and icons
+        const { useState, useEffect } = React;
+        
+        // Custom Hook to use Lucide Icons in this environment
+        const Icon = ({ name, className }) => {
+            useEffect(() => {
+                lucide.createIcons();
+            }, [name]);
+            return <i data-lucide={name} className={className}></i>;
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('vision');
+            const [expandedPhase, setExpandedPhase] = useState(0);
+            const [selectedAnalysisPhase, setSelectedAnalysisPhase] = useState('p3');
+
+            const phases = [
+                {
+                    id: 1,
+                    title: "Phase 1: The Digital Learning Coach",
+                    subtitle: "Winning Hearts & Minds",
+                    timeline: "Months 1-7",
+                    icon: "users",
+                    focus: "Plug-in approach, Coaching Cycles, School Audit",
+                    description: "Focusing on team-teaching to ensure skills aren't siloed. Co-planning thematic units with low-stakes, high-impact tech integration.",
+                    successIndicators: [
+                        "Winning hearts and minds: Target 70% confidence increase.",
+                        "Successful integration of tech into 3+ thematic units per year group."
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "Phase 2: Capacity Building",
+                    subtitle: "From Coach to Integrator",
+                    timeline: "Months 8-12",
+                    icon: "trending-up",
+                    focus: "Micro-learning, Discrete Lessons, Mobile Resource Units",
+                    description: "Phasing out coaching for a tech integrator role. Introducing the spiral curriculum (Digital Literacy, Creative Design, Computing).",
+                    successIndicators: [
+                        "Curriculum Delivery: Transition to discrete specialist lessons.",
+                        "Launch of the Spiral Curriculum across all Key Stages."
+                    ]
+                },
+                {
+                    id: 3,
+                    title: "Phase 3: The Innovation Lab",
+                    subtitle: "Center of Excellence",
+                    timeline: "Long-term Legacy",
+                    icon: "cpu",
+                    focus: "State-of-the-art Hub, Maker Spaces, International Profile",
+                    description: "A specially curated space for project-based learning, robotics, and 3D modeling. A significant marketable asset for DBSJ.",
+                    successIndicators: [
+                        "Global Recognition: Hosting regional robotics competitions.",
+                        "Establishment of the Innovation Lab as a marketable school asset."
+                    ]
+                }
+            ];
+
+            const metrics = [
+                { label: "CapEx", current: 2, p1: 1, p2: 3, p3: 5 },
+                { label: "Student Outcomes", current: 1, p1: 3, p2: 4, p3: 5 },
+                { label: "Staff Capacity", current: 1, p1: 4, p2: 5, p3: 4 },
+                { label: "Infrastructure", current: 2, p1: 2, p2: 3, p3: 5 },
+                { label: "Innovation", current: 1, p1: 2, p2: 3, p3: 5 }
+            ];
+
+            const RadarChart = ({ phaseKey }) => {
+                const size = 300;
+                const center = size / 2;
+                const radius = size * 0.4;
+                const angleStep = (Math.PI * 2) / metrics.length;
+                const points = metrics.map((m, i) => {
+                    const val = m[phaseKey];
+                    const factor = val / 5;
+                    const x = center + radius * factor * Math.sin(i * angleStep);
+                    const y = center - radius * factor * Math.cos(i * angleStep);
+                    return `${x},${y}`;
+                }).join(' ');
+                const phaseColors = { current: '#94a3b8', p1: '#3b82f6', p2: '#6366f1', p3: '#9333ea' };
+
+                return (
+                    <div className="flex flex-col items-center justify-center p-4">
+                        <svg width={size} height={size} className="overflow-visible">
+                            {[1, 2, 3, 4, 5].map(tick => (
+                                <circle key={tick} cx={center} cy={center} r={(radius / 5) * tick} fill="none" stroke="#e2e8f0" strokeWidth="1" />
+                            ))}
+                            {metrics.map((m, i) => {
+                                const x = center + radius * Math.sin(i * angleStep);
+                                const y = center - radius * Math.cos(i * angleStep);
+                                const lx = center + (radius + 25) * Math.sin(i * angleStep);
+                                const ly = center - (radius + 25) * Math.cos(i * angleStep);
+                                return (
+                                    <g key={i}>
+                                        <line x1={center} y1={center} x2={x} y2={y} stroke="#e2e8f0" strokeWidth="1" />
+                                        <text x={lx} y={ly} textAnchor="middle" fontSize="10" fontWeight="bold" className="fill-slate-400 uppercase tracking-tighter">{m.label}</text>
+                                    </g>
+                                );
+                            })}
+                            <polygon points={points} fill={phaseColors[phaseKey]} fillOpacity="0.2" stroke={phaseColors[phaseKey]} strokeWidth="3" strokeLinejoin="round" />
+                        </svg>
+                    </div>
+                );
+            };
+
+            return (
+                <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
+                    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+                        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">D</div>
+                                <span className="font-semibold tracking-tight text-lg">DBSJ Computing Vision</span>
+                            </div>
+                            <div className="hidden md:flex gap-8 text-sm font-medium text-slate-500">
+                                {['Vision', 'Roadmap', 'Comparison'].map((item) => (
+                                    <button key={item} onClick={() => setActiveTab(item.toLowerCase())} className={`hover:text-indigo-600 ${activeTab === item.toLowerCase() ? 'text-indigo-600' : ''}`}>{item}</button>
+                                ))}
+                            </div>
+                        </div>
+                    </nav>
+
+                    <main className="max-w-6xl mx-auto px-6 py-12">
+                        {activeTab === 'vision' && (
+                            <div className="space-y-16">
+                                <header className="max-w-3xl">
+                                    <h1 className="text-5xl font-bold tracking-tight text-slate-900 mb-6">From Digital Coaching to an <span className="text-indigo-600">Innovation Hub.</span></h1>
+                                    <p className="text-xl text-slate-600 leading-relaxed">Transforming DBSJ from a fragmented tech approach into a flagship department.</p>
+                                </header>
+                                <div className="grid md:grid-cols-2 gap-8">
+                                    <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+                                        <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">The Status Quo</h3>
+                                        <ul className="space-y-4">
+                                            {["Unstructured device management", "No dedicated primary computing lab", "Reliance on secondary staff for Y5-6", "Underused technology"].map((item, i) => (
+                                                <li key={i} className="flex items-center gap-3 text-slate-700"><div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>{item}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <div className="bg-indigo-600 p-8 rounded-2xl text-white shadow-xl">
+                                        <h3 className="text-xs font-bold uppercase tracking-widest text-indigo-200 mb-4">The Strategic Aims</h3>
+                                        <ul className="space-y-4">
+                                            {["Ground-up Innovation Learning Hub", "Ambitious flagship computing curriculum", "Cohesive digital strategy"].map((item, i) => (
+                                                <li key={i} className="flex items-center gap-3"><Icon name="zap" className="w-4 h-4 text-indigo-300" />{item}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'roadmap' && (
+                            <div className="space-y-8">
+                                <h2 className="text-3xl font-bold">Implementation Roadmap</h2>
+                                <div className="space-y-4">
+                                    {phases.map((phase, index) => (
+                                        <div key={phase.id} className={`border rounded-2xl cursor-pointer ${expandedPhase === index ? 'bg-white border-indigo-200 shadow-md' : 'bg-slate-50'}`} onClick={() => setExpandedPhase(index)}>
+                                            <div className="p-6 flex items-center justify-between">
+                                                <div className="flex items-center gap-4">
+                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${expandedPhase === index ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-500'}`}>
+                                                        <Icon name={phase.icon} className="w-5 h-5" />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-bold">{phase.title}</h3>
+                                                        <p className="text-slate-500 text-sm">{phase.timeline}</p>
+                                                    </div>
+                                                </div>
+                                                <Icon name="chevron-down" className={`w-5 h-5 transition-transform ${expandedPhase === index ? 'rotate-180' : ''}`} />
+                                            </div>
+                                            {expandedPhase === index && (
+                                                <div className="px-6 pb-8 border-t border-slate-100 p-4 grid md:grid-cols-2 gap-8">
+                                                    <div>
+                                                        <p className="text-sm text-slate-600">{phase.description}</p>
+                                                    </div>
+                                                    <div className="bg-slate-50 p-4 rounded-xl">
+                                                        <span className="text-xs font-bold uppercase text-slate-500">Success Indicators</span>
+                                                        <ul className="mt-2 space-y-2">
+                                                            {phase.successIndicators.map((s, i) => <li key={i} className="text-sm italic text-slate-700">- {s}</li>)}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'comparison' && (
+                            <div className="space-y-12">
+                                <div className="flex justify-between items-end">
+                                    <h2 className="text-3xl font-bold">Impact Analysis</h2>
+                                    <div className="flex gap-2 p-1 bg-slate-200 rounded-lg">
+                                        {['current', 'p1', 'p2', 'p3'].map(k => (
+                                            <button key={k} onClick={() => setSelectedAnalysisPhase(k)} className={`px-3 py-1 text-xs font-bold rounded ${selectedAnalysisPhase === k ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500'}`}>{k.toUpperCase()}</button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="bg-white p-8 rounded-3xl border flex flex-col md:flex-row items-center gap-12">
+                                    <RadarChart phaseKey={selectedAnalysisPhase} />
+                                    <div className="flex-1 w-full space-y-4">
+                                        {metrics.map((m, i) => (
+                                            <div key={i}>
+                                                <div className="flex justify-between text-xs font-bold uppercase text-slate-400"><span>{m.label}</span><span>{m[selectedAnalysisPhase]}/5</span></div>
+                                                <div className="h-1.5 w-full bg-slate-100 rounded-full mt-1">
+                                                    <div className="h-full bg-indigo-500 rounded-full transition-all duration-500" style={{ width: `${(m[selectedAnalysisPhase]/5)*100}%` }}></div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </main>
+
+                    <footer className="max-w-6xl mx-auto px-6 py-12 border-t flex justify-between items-center">
+                        <div className="flex items-center gap-2 px-4 py-2 bg-indigo-50 rounded-full border border-indigo-100">
+                            <Icon name="sparkles" className="w-4 h-4 text-indigo-600" />
+                            <span className="text-sm font-semibold text-indigo-900">Built with Gemini</span>
+                        </div>
+                        <div className="flex gap-2">
+                            <span className="px-2 py-1 bg-slate-100 rounded text-[10px] font-mono uppercase">Confidential</span>
+                            <span className="px-2 py-1 bg-indigo-100 rounded text-[10px] font-mono uppercase text-indigo-600">DBSJ Draft</span>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
