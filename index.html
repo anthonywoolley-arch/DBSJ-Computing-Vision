@@ -13,18 +13,20 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
-<body>
+<body class="bg-slate-50">
     <div id="root"></div>
 
     <script type="text/babel">
-        // Destructure hooks and icons
         const { useState, useEffect } = React;
         
-        // Custom Hook to use Lucide Icons in this environment
         const Icon = ({ name, className }) => {
             useEffect(() => {
-                lucide.createIcons();
+                if (window.lucide) lucide.createIcons();
             }, [name]);
             return <i data-lucide={name} className={className}></i>;
         };
@@ -85,9 +87,9 @@
             ];
 
             const RadarChart = ({ phaseKey }) => {
-                const size = 300;
+                const size = 450; // Increased for desktop
                 const center = size / 2;
-                const radius = size * 0.4;
+                const radius = size * 0.38;
                 const angleStep = (Math.PI * 2) / metrics.length;
                 const points = metrics.map((m, i) => {
                     const val = m[phaseKey];
@@ -99,7 +101,7 @@
                 const phaseColors = { current: '#94a3b8', p1: '#3b82f6', p2: '#6366f1', p3: '#9333ea' };
 
                 return (
-                    <div className="flex flex-col items-center justify-center p-4">
+                    <div className="flex flex-col items-center justify-center p-8 bg-white rounded-3xl shadow-inner border border-slate-100">
                         <svg width={size} height={size} className="overflow-visible">
                             {[1, 2, 3, 4, 5].map(tick => (
                                 <circle key={tick} cx={center} cy={center} r={(radius / 5) * tick} fill="none" stroke="#e2e8f0" strokeWidth="1" />
@@ -107,92 +109,146 @@
                             {metrics.map((m, i) => {
                                 const x = center + radius * Math.sin(i * angleStep);
                                 const y = center - radius * Math.cos(i * angleStep);
-                                const lx = center + (radius + 25) * Math.sin(i * angleStep);
-                                const ly = center - (radius + 25) * Math.cos(i * angleStep);
+                                const lx = center + (radius + 40) * Math.sin(i * angleStep);
+                                const ly = center - (radius + 40) * Math.cos(i * angleStep);
                                 return (
                                     <g key={i}>
                                         <line x1={center} y1={center} x2={x} y2={y} stroke="#e2e8f0" strokeWidth="1" />
-                                        <text x={lx} y={ly} textAnchor="middle" fontSize="10" fontWeight="bold" className="fill-slate-400 uppercase tracking-tighter">{m.label}</text>
+                                        <text x={lx} y={ly} textAnchor="middle" fontSize="14" fontWeight="800" className="fill-slate-500 uppercase tracking-widest">{m.label}</text>
                                     </g>
                                 );
                             })}
-                            <polygon points={points} fill={phaseColors[phaseKey]} fillOpacity="0.2" stroke={phaseColors[phaseKey]} strokeWidth="3" strokeLinejoin="round" />
+                            <polygon points={points} fill={phaseColors[phaseKey]} fillOpacity="0.2" stroke={phaseColors[phaseKey]} strokeWidth="5" strokeLinejoin="round" className="transition-all duration-700" />
                         </svg>
                     </div>
                 );
             };
 
             return (
-                <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-                    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
-                        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">D</div>
-                                <span className="font-semibold tracking-tight text-lg">DBSJ Computing Vision</span>
+                <div className="min-h-screen text-slate-900 leading-relaxed selection:bg-indigo-100">
+                    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200 py-4">
+                        <div className="max-w-[1400px] mx-auto px-12 flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-indigo-200">D</div>
+                                <span className="font-extrabold tracking-tight text-2xl">DBSJ Computing Vision</span>
                             </div>
-                            <div className="hidden md:flex gap-8 text-sm font-medium text-slate-500">
+                            <div className="flex gap-12 text-lg font-bold text-slate-500">
                                 {['Vision', 'Roadmap', 'Comparison'].map((item) => (
-                                    <button key={item} onClick={() => setActiveTab(item.toLowerCase())} className={`hover:text-indigo-600 ${activeTab === item.toLowerCase() ? 'text-indigo-600' : ''}`}>{item}</button>
+                                    <button 
+                                        key={item} 
+                                        onClick={() => setActiveTab(item.toLowerCase())} 
+                                        className={`hover:text-indigo-600 transition-all relative py-2 ${activeTab === item.toLowerCase() ? 'text-indigo-600 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-indigo-600 after:rounded-full' : ''}`}
+                                    >
+                                        {item}
+                                    </button>
                                 ))}
                             </div>
                         </div>
                     </nav>
 
-                    <main className="max-w-6xl mx-auto px-6 py-12">
+                    <main className="max-w-[1400px] mx-auto px-12 py-20">
                         {activeTab === 'vision' && (
-                            <div className="space-y-16">
-                                <header className="max-w-3xl">
-                                    <h1 className="text-5xl font-bold tracking-tight text-slate-900 mb-6">From Digital Coaching to an <span className="text-indigo-600">Innovation Hub.</span></h1>
-                                    <p className="text-xl text-slate-600 leading-relaxed">Transforming DBSJ from a fragmented tech approach into a flagship department.</p>
+                            <div className="space-y-24 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                                <header className="max-w-5xl">
+                                    <h1 className="text-7xl lg:text-8xl font-black tracking-tight text-slate-900 mb-8 leading-[1.1]">
+                                        From Digital Coaching to an <span className="text-indigo-600">Innovation Hub.</span>
+                                    </h1>
+                                    <p className="text-3xl text-slate-500 font-medium max-w-4xl leading-relaxed">
+                                        Transforming DBSJ from a fragmented tech approach into a flagship department. A world-class strategy for future-ready excellence.
+                                    </p>
                                 </header>
-                                <div className="grid md:grid-cols-2 gap-8">
-                                    <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-                                        <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">The Status Quo</h3>
-                                        <ul className="space-y-4">
-                                            {["Unstructured device management", "No dedicated primary computing lab", "Reliance on secondary staff for Y5-6", "Underused technology"].map((item, i) => (
-                                                <li key={i} className="flex items-center gap-3 text-slate-700"><div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>{item}</li>
+                                
+                                <div className="grid lg:grid-cols-2 gap-12">
+                                    <div className="bg-white p-12 rounded-[2.5rem] border border-slate-200 shadow-sm hover:shadow-xl transition-all">
+                                        <h3 className="text-lg font-black uppercase tracking-[0.2em] text-slate-400 mb-8">The Status Quo</h3>
+                                        <ul className="space-y-6">
+                                            {["Unstructured device management", "No dedicated primary computing lab", "Reliance on secondary staff for Y5-6", "Underused technology & staff tech burnout"].map((item, i) => (
+                                                <li key={i} className="flex items-center gap-6 text-2xl font-semibold text-slate-700">
+                                                    <div className="w-3 h-3 rounded-full bg-slate-300 shrink-0"></div>
+                                                    {item}
+                                                </li>
                                             ))}
                                         </ul>
                                     </div>
-                                    <div className="bg-indigo-600 p-8 rounded-2xl text-white shadow-xl">
-                                        <h3 className="text-xs font-bold uppercase tracking-widest text-indigo-200 mb-4">The Strategic Aims</h3>
-                                        <ul className="space-y-4">
-                                            {["Ground-up Innovation Learning Hub", "Ambitious flagship computing curriculum", "Cohesive digital strategy"].map((item, i) => (
-                                                <li key={i} className="flex items-center gap-3"><Icon name="zap" className="w-4 h-4 text-indigo-300" />{item}</li>
+                                    <div className="bg-indigo-600 p-12 rounded-[2.5rem] text-white shadow-2xl shadow-indigo-200 flex flex-col justify-center">
+                                        <h3 className="text-lg font-black uppercase tracking-[0.2em] text-indigo-200 mb-8">The Strategic Aims</h3>
+                                        <ul className="space-y-6">
+                                            {["Ground-up Innovation Learning Hub", "Ambitious flagship computing curriculum", "Cohesive digital strategy for all KS", "Aligned with KHDA 'builders' aspirations"].map((item, i) => (
+                                                <li key={i} className="flex items-center gap-6 text-2xl font-bold">
+                                                    <Icon name="zap" className="w-8 h-8 text-indigo-300 shrink-0" />
+                                                    {item}
+                                                </li>
                                             ))}
                                         </ul>
+                                    </div>
+                                </div>
+
+                                <div className="grid md:grid-cols-3 gap-12">
+                                    <div className="p-10 bg-emerald-50 rounded-3xl border border-emerald-100">
+                                        <div className="w-16 h-16 bg-emerald-600 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-emerald-200">
+                                            <Icon name="users" className="text-white w-8 h-8" />
+                                        </div>
+                                        <h4 className="text-2xl font-black mb-4">People over Processes</h4>
+                                        <p className="text-xl text-emerald-900/60 font-medium">Collaborative coaching to close the skills gap between specialists and class teachers.</p>
+                                    </div>
+                                    <div className="p-10 bg-blue-50 rounded-3xl border border-blue-100">
+                                        <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-blue-200">
+                                            <Icon name="layout" className="text-white w-8 h-8" />
+                                        </div>
+                                        <h4 className="text-2xl font-black mb-4">Financial Stability</h4>
+                                        <p className="text-xl text-blue-900/60 font-medium">Low CapEx in early phases ensuring impact is proven before heavy investment.</p>
+                                    </div>
+                                    <div className="p-10 bg-purple-50 rounded-3xl border border-purple-100">
+                                        <div className="w-16 h-16 bg-purple-600 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-purple-200">
+                                            <Icon name="bar-chart-3" className="text-white w-8 h-8" />
+                                        </div>
+                                        <h4 className="text-2xl font-black mb-4">Audit-Ready</h4>
+                                        <p className="text-xl text-purple-900/60 font-medium">Concrete evidence for BSO and KHDA to achieve and maintain Outstanding status.</p>
                                     </div>
                                 </div>
                             </div>
                         )}
 
                         {activeTab === 'roadmap' && (
-                            <div className="space-y-8">
-                                <h2 className="text-3xl font-bold">Implementation Roadmap</h2>
-                                <div className="space-y-4">
+                            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700 max-w-6xl mx-auto">
+                                <h2 className="text-5xl font-black text-slate-900 mb-12 text-center">Implementation Roadmap</h2>
+                                <div className="space-y-8">
                                     {phases.map((phase, index) => (
-                                        <div key={phase.id} className={`border rounded-2xl cursor-pointer ${expandedPhase === index ? 'bg-white border-indigo-200 shadow-md' : 'bg-slate-50'}`} onClick={() => setExpandedPhase(index)}>
-                                            <div className="p-6 flex items-center justify-between">
-                                                <div className="flex items-center gap-4">
-                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${expandedPhase === index ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-500'}`}>
-                                                        <Icon name={phase.icon} className="w-5 h-5" />
+                                        <div 
+                                            key={phase.id} 
+                                            className={`border-[3px] rounded-[2rem] cursor-pointer transition-all ${expandedPhase === index ? 'bg-white border-indigo-600 shadow-2xl scale-[1.02]' : 'bg-white border-slate-100 hover:border-slate-300 opacity-80'}`} 
+                                            onClick={() => setExpandedPhase(index)}
+                                        >
+                                            <div className="p-10 flex items-center justify-between">
+                                                <div className="flex items-center gap-8">
+                                                    <div className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-colors ${expandedPhase === index ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
+                                                        <Icon name={phase.icon} className="w-10 h-10" />
                                                     </div>
                                                     <div>
-                                                        <h3 className="font-bold">{phase.title}</h3>
-                                                        <p className="text-slate-500 text-sm">{phase.timeline}</p>
+                                                        <div className="flex items-center gap-6 mb-1">
+                                                            <h3 className="font-black text-3xl">{phase.title}</h3>
+                                                            <span className="text-sm font-bold px-4 py-1.5 bg-indigo-100 rounded-full text-indigo-700 uppercase tracking-widest">{phase.timeline}</span>
+                                                        </div>
+                                                        <p className="text-slate-500 text-xl font-bold uppercase tracking-wider">{phase.subtitle}</p>
                                                     </div>
                                                 </div>
-                                                <Icon name="chevron-down" className={`w-5 h-5 transition-transform ${expandedPhase === index ? 'rotate-180' : ''}`} />
+                                                <Icon name="chevron-down" className={`w-10 h-10 transition-transform ${expandedPhase === index ? 'rotate-180' : ''}`} />
                                             </div>
                                             {expandedPhase === index && (
-                                                <div className="px-6 pb-8 border-t border-slate-100 p-4 grid md:grid-cols-2 gap-8">
-                                                    <div>
-                                                        <p className="text-sm text-slate-600">{phase.description}</p>
+                                                <div className="px-10 pb-12 border-t border-slate-100 pt-10 grid lg:grid-cols-2 gap-16">
+                                                    <div className="space-y-6">
+                                                        <h4 className="text-lg font-black uppercase tracking-widest text-indigo-600">Focus Strategy</h4>
+                                                        <p className="text-2xl text-slate-800 font-medium leading-relaxed">{phase.description}</p>
                                                     </div>
-                                                    <div className="bg-slate-50 p-4 rounded-xl">
-                                                        <span className="text-xs font-bold uppercase text-slate-500">Success Indicators</span>
-                                                        <ul className="mt-2 space-y-2">
-                                                            {phase.successIndicators.map((s, i) => <li key={i} className="text-sm italic text-slate-700">- {s}</li>)}
+                                                    <div className="bg-slate-50 p-8 rounded-3xl border border-slate-200">
+                                                        <h4 className="text-lg font-black uppercase tracking-widest text-slate-500 mb-6">Success Indicators</h4>
+                                                        <ul className="space-y-4">
+                                                            {phase.successIndicators.map((s, i) => (
+                                                                <li key={i} className="text-xl font-bold text-slate-700 flex gap-4">
+                                                                    <div className="w-3 h-3 rounded-full bg-indigo-400 mt-2 shrink-0"></div>
+                                                                    <span>{s}</span>
+                                                                </li>
+                                                            ))}
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -204,40 +260,69 @@
                         )}
 
                         {activeTab === 'comparison' && (
-                            <div className="space-y-12">
-                                <div className="flex justify-between items-end">
-                                    <h2 className="text-3xl font-bold">Impact Analysis</h2>
-                                    <div className="flex gap-2 p-1 bg-slate-200 rounded-lg">
+                            <div className="space-y-16 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-12">
+                                    <div className="max-w-3xl">
+                                        <h2 className="text-6xl font-black text-slate-900 mb-6 leading-tight">Impact Analysis</h2>
+                                        <p className="text-2xl text-slate-500 font-medium">Visualizing the measurable shift in key performance indicators across implementation phases.</p>
+                                    </div>
+                                    <div className="flex gap-4 p-2 bg-slate-200/50 rounded-2xl">
                                         {['current', 'p1', 'p2', 'p3'].map(k => (
-                                            <button key={k} onClick={() => setSelectedAnalysisPhase(k)} className={`px-3 py-1 text-xs font-bold rounded ${selectedAnalysisPhase === k ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500'}`}>{k.toUpperCase()}</button>
+                                            <button 
+                                                key={k} 
+                                                onClick={() => setSelectedAnalysisPhase(k)} 
+                                                className={`px-8 py-4 text-lg font-black rounded-xl uppercase tracking-widest transition-all ${selectedAnalysisPhase === k ? 'bg-white text-indigo-600 shadow-xl' : 'text-slate-500 hover:text-slate-700'}`}
+                                            >
+                                                {k === 'current' ? 'Status Quo' : `Phase ${k.slice(1)}`}
+                                            </button>
                                         ))}
                                     </div>
                                 </div>
-                                <div className="bg-white p-8 rounded-3xl border flex flex-col md:flex-row items-center gap-12">
-                                    <RadarChart phaseKey={selectedAnalysisPhase} />
-                                    <div className="flex-1 w-full space-y-4">
+                                <div className="bg-white p-16 rounded-[3rem] border border-slate-200 shadow-2xl grid lg:grid-cols-2 gap-20 items-center">
+                                    <div className="scale-110 lg:scale-125 origin-center">
+                                        <RadarChart phaseKey={selectedAnalysisPhase} />
+                                    </div>
+                                    <div className="space-y-10">
                                         {metrics.map((m, i) => (
-                                            <div key={i}>
-                                                <div className="flex justify-between text-xs font-bold uppercase text-slate-400"><span>{m.label}</span><span>{m[selectedAnalysisPhase]}/5</span></div>
-                                                <div className="h-1.5 w-full bg-slate-100 rounded-full mt-1">
-                                                    <div className="h-full bg-indigo-500 rounded-full transition-all duration-500" style={{ width: `${(m[selectedAnalysisPhase]/5)*100}%` }}></div>
+                                            <div key={i} className="space-y-3">
+                                                <div className="flex justify-between text-lg font-black uppercase tracking-[0.2em] text-slate-400">
+                                                    <span>{m.label}</span>
+                                                    <span className="text-slate-900">{m[selectedAnalysisPhase]}/5</span>
+                                                </div>
+                                                <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden">
+                                                    <div 
+                                                        className={`h-full transition-all duration-1000 ease-out rounded-full ${
+                                                            selectedAnalysisPhase === 'current' ? 'bg-slate-300' :
+                                                            selectedAnalysisPhase === 'p1' ? 'bg-blue-500' :
+                                                            selectedAnalysisPhase === 'p2' ? 'bg-indigo-500' : 'bg-purple-600'
+                                                        }`} 
+                                                        style={{ width: `${(m[selectedAnalysisPhase]/5)*100}%` }}
+                                                    ></div>
                                                 </div>
                                             </div>
                                         ))}
+                                        <div className="mt-12 p-8 bg-slate-50 rounded-2xl border border-slate-100">
+                                            <p className="text-2xl text-slate-600 italic font-medium">
+                                                {selectedAnalysisPhase === 'current' ? "Currently limited by fragmented infrastructure and low staff capacity." : 
+                                                 selectedAnalysisPhase === 'p1' ? "Primary focus on elevating Staff Capacity and Student Outcomes with minimal initial CapEx." :
+                                                 selectedAnalysisPhase === 'p2' ? "Major gains in curriculum independence and infrastructure scalability." :
+                                                 "Realizing the global flagship vision as a world-leading Innovation Hub."}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         )}
                     </main>
 
-                    <footer className="max-w-6xl mx-auto px-6 py-12 border-t flex justify-between items-center">
-                        <div className="flex items-center gap-2 px-4 py-2 bg-indigo-50 rounded-full border border-indigo-100">
-                            <Icon name="sparkles" className="w-4 h-4 text-indigo-600" />
-                            <span className="text-sm font-semibold text-indigo-900">Built with Gemini</span>
+                    <footer className="max-w-[1400px] mx-auto px-12 py-16 border-t flex flex-col md:flex-row justify-between items-center gap-8 text-xl">
+                        <div className="flex items-center gap-4 px-8 py-4 bg-indigo-50 rounded-full border border-indigo-100 shadow-sm">
+                            <Icon name="sparkles" className="w-6 h-6 text-indigo-600" />
+                            <span className="font-bold text-indigo-900">Built with Gemini for DBSJ</span>
                         </div>
-                        <div className="flex gap-2">
-                            <span className="px-2 py-1 bg-slate-100 rounded text-[10px] font-mono uppercase">Confidential</span>
-                            <span className="px-2 py-1 bg-indigo-100 rounded text-[10px] font-mono uppercase text-indigo-600">DBSJ Draft</span>
+                        <div className="flex gap-6">
+                            <span className="px-6 py-2 bg-slate-200 rounded-lg text-sm font-black uppercase tracking-widest text-slate-600">Confidential</span>
+                            <span className="px-6 py-2 bg-indigo-100 rounded-lg text-sm font-black uppercase tracking-widest text-indigo-700">Board Review Draft v2.0</span>
                         </div>
                     </footer>
                 </div>
